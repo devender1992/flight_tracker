@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="/" class="text-white-50 text-decoration-none">&larr; Back to Search</a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        {% if status %}
+        <div class="glass-card p-5">
+            <div class="text-center mb-5">
+                <span class="badge bg-lg mb-3
+                        {% if status.flight_status == 'active' %}bg-success
+                        {% elif status.flight_status == 'landed' %}bg-info
+                        {% elif status.flight_status == 'cancelled' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                    {{ status.flight_status | upper }}
+                </span>
+                <h1 class="text-white display-5 fw-bold">{{ status.airline.name }}</h1>
+                <p class="h4 text-white-50">{{ status.flight.iata }}</p>
+            </div>
+
+            <div class="row text-white text-center mb-5">
+                <!-- Departure Details -->
+                <div class="col-5">
+                    <div class="display-6 fw-bold text-info">{{ status.departure.iata }}</div>
+                    <p class="text-white-50 mb-1">{{ status.departure.airport }}</p>
+
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 mt-3 text-start">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-white-50">Scheduled:</span>
+                            <span>{{ status.departure.scheduled[:16].replace('T', ' ') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-white-50">Actual:</span>
+                            <span>{{ (status.departure.actual or status.departure.estimated or 'On
+                                Time')[:16].replace('T', ' ') }}</span>
+                        </div>
+                        <div class="border-top border-white border-opacity-10 my-2"></div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Term: {{ status.departure.terminal }}</span>
+                            <span>Gate: {{ status.departure.gate }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrow & Duration -->
+                <div class="col-2 align-self-center">
+                    <div class="h1 text-white-50">&rarr;</div>
+                    {% if status.ticket_price %}
+                    <div class="badge bg-success mt-2">${{ status.ticket_price }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Arrival Details -->
+                <div class="col-5">
+                    <div class="display-6 fw-bold text-info">{{ status.arrival.iata }}</div>
+                    <p class="text-white-50 mb-1">{{ status.arrival.airport }}</p>
+
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 mt-3 text-start">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-white-50">Scheduled:</span>
+                            <span>{{ status.arrival.scheduled[:16].replace('T', ' ') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-white-50">Estimated:</span>
+                            <span>{{ (status.arrival.estimated or status.arrival.actual or 'On Time')[:16].replace('T',
+                                ' ') }}</span>
+                        </div>
+                        <div class="border-top border-white border-opacity-10 my-2"></div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Term: {{ status.arrival.terminal }}</span>
+                            <span>Gate: {{ status.arrival.gate }}</span>
+                        </div>
+                        <div class="mt-2 small text-warning text-center">
+                            Baggage: {{ status.arrival.baggage }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger glass-alert" role="alert">
+            Flight not found. Please check the flight number and try again.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
